@@ -64,7 +64,7 @@
         methods: {
             register() {
                 let app = this;
-                axios.post('/auth/register', {
+                axios.post('/api/auth/register', {
                     name: app.name,
                     email: app.email,
                     password: app.password

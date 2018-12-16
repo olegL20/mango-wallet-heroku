@@ -5,10 +5,13 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Requests\RegisterFormRequest;
 use App\Models\User;
 use App\Http\Controllers\Controller;
+use App\Notifications\SignupActivate;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
+use Avatar;
+use Storage;
 
 class RegisterController extends Controller
 {
@@ -52,15 +55,33 @@ class RegisterController extends Controller
         $user->email = $request->email;
         $user->name = $request->name;
         $user->password = bcrypt($request->password);
+        $user->activation_token = str_random(60);
         $user->save();
 
-        event(new Registered($user));
-
-
+        $user->notify(new SignupActivate($user));
+        $avatar = Avatar::create($user->name)->getImageObject()->encode('png');
+        Storage::put('avatars/'.$user->id.'/avatar.png', (string) $avatar);
         return response([
             'status' => 'success',
             'data' => $user
-        ], 200);
+        ], 201);
+    }
+
+    public function activateUser($token)
+    {
+        $user = User::where('activation_token', $token)->first();
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'This activation token is invalid.'
+            ], 404);
+        }
+
+        $user->active = true;
+        $user->activation_token = '';
+        $user->save();
+
+        return $user;
     }
 
 

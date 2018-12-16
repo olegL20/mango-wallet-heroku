@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Http\Resources\UserResource;
+use Carbon\Carbon;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
@@ -42,23 +44,45 @@ class LoginController extends Controller
     public function login(LoginRequest $request)
     {
         $credentials = $request->only('email', 'password');
+        $credentials['active'] = 1;
+        $credentials['deleted_at'] = null;
 
-        if ( !$token = auth()->attempt($credentials)) {
-            return response([
-                'status' => 'error',
-                'error' => 'invalid.credentials',
-                'msg' => 'Invalid Credentials.'
+        if(!Auth::guard('web')->attempt($credentials))
+            return response()->json([
+                'message' => 'Unauthorized'
             ], 401);
+
+        $user = $request->user();
+
+        $tokenResult = $user->createToken('Personal Access Token');
+        $token = $tokenResult->token;
+
+        if ($request->remember_me) {
+            $token->expires_at = Carbon::now()->addWeeks(1);
         }
 
-        return response([
-            'status' => 200,
-        ])
-            ->header('Authorization', $token);
+        $token->save();
+
+        return response()->json([
+            'access_token' => $tokenResult->accessToken,
+            'token_type' => 'Bearer',
+            'expires_at' => Carbon::parse(
+                $tokenResult->token->expires_at
+            )->toDateTimeString()
+        ]);
     }
 
     public function user(Request $request)
     {
-        return app(UserResource::class, ['resource' => auth()->user()]);
+        return app(UserResource::class, ['resource' => $request->user()]);
+    }
+
+    public function logout(Request $request)
+    {
+        $request->user()->token()->revoke();
+
+        return response()->json([
+            'message' => 'Successfully logged out'
+        ]);
     }
 }

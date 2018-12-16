@@ -34,7 +34,7 @@ Vue.use(BootstrapVue);
 Vue.use(VueRouter);
 Vue.use(VueAxios, axios);
 
-axios.defaults.baseURL = window.location.hostname + '/api/';
+// axios.defaults.baseURL = window.location.hostname + '/api/';
 
 const router = new VueRouter({
     mode: "history",
@@ -84,6 +84,12 @@ router.beforeEach((to, from, next) => {
 
     // if logged in redirect to dashboard
     if(to.path === '/login' && store.state.isLoggedIn) {
+        next({ name: 'dashboard' });
+        return
+    }
+
+    // if logged in redirect to dashboard
+    if(to.path === '/register' && store.state.isLoggedIn) {
         next({ name: 'dashboard' });
         return
     }

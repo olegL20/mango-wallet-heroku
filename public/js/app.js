@@ -20805,6 +20805,7 @@ var OBSERVER_CONFIG = {
                     Authorization: 'Bearer ' + localStorage.getItem('token')
                 }
             }).then(function (response) {
+                console.log(response);
                 _this.user = response.data;
             }).catch(function (error) {
                 if (error.response.status === 401 || error.response.status === 403) {
@@ -20919,7 +20920,7 @@ var OBSERVER_CONFIG = {
     methods: {
         register: function register() {
             var app = this;
-            __WEBPACK_IMPORTED_MODULE_0_axios___default.a.post('/auth/register', {
+            __WEBPACK_IMPORTED_MODULE_0_axios___default.a.post('/api/auth/register', {
                 name: app.name,
                 email: app.email,
                 password: app.password
@@ -20978,12 +20979,12 @@ var OBSERVER_CONFIG = {
             var _this = this;
 
             this.error = false;
-            __WEBPACK_IMPORTED_MODULE_0_axios___default.a.post('/auth/login', {
+            __WEBPACK_IMPORTED_MODULE_0_axios___default.a.post('/api/auth/login', {
                 email: this.email,
                 password: this.password
             }).then(function (response) {
                 __WEBPACK_IMPORTED_MODULE_1__store__["a" /* default */].commit('loginUser');
-                localStorage.setItem('token', response.headers.authorization);
+                localStorage.setItem('token', response.data.access_token);
                 _this.$router.push({ name: 'home' });
             }).catch(function (error) {
                 console.log(error);
@@ -21082,7 +21083,7 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_4_boot
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vue_router__["a" /* default */]);
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_3_vue_axios___default.a, __WEBPACK_IMPORTED_MODULE_2_axios___default.a);
 
-__WEBPACK_IMPORTED_MODULE_2_axios___default.a.defaults.baseURL = window.location.hostname + '/api/';
+// axios.defaults.baseURL = window.location.hostname + '/api/';
 
 var router = new __WEBPACK_IMPORTED_MODULE_1_vue_router__["a" /* default */]({
     mode: "history",
@@ -21134,6 +21135,12 @@ router.beforeEach(function (to, from, next) {
 
     // if logged in redirect to dashboard
     if (to.path === '/login' && __WEBPACK_IMPORTED_MODULE_11__store__["a" /* default */].state.isLoggedIn) {
+        next({ name: 'dashboard' });
+        return;
+    }
+
+    // if logged in redirect to dashboard
+    if (to.path === '/register' && __WEBPACK_IMPORTED_MODULE_11__store__["a" /* default */].state.isLoggedIn) {
         next({ name: 'dashboard' });
         return;
     }

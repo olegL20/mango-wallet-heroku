@@ -33,12 +33,12 @@
         methods: {
             login() {
                 this.error = false;
-                axios.post('/auth/login', {
+                axios.post('/api/auth/login', {
                     email: this.email,
                     password: this.password
                 }).then(response => {
                     store.commit('loginUser');
-                    localStorage.setItem('token', response.headers.authorization);
+                    localStorage.setItem('token', response.data.access_token);
                     this.$router.push({name: 'home'});
                 }).catch(error => {
                     console.log(error);

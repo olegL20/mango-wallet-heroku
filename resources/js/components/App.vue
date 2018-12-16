@@ -45,6 +45,7 @@
                         }
                     },
                 ).then(response => {
+                    console.log(response);
                     this.user = response.data;
                 }).catch(error => {
                     if (error.response.status === 401 || error.response.status === 403) {
