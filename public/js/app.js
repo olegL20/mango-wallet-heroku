@@ -21082,7 +21082,7 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_4_boot
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vue_router__["a" /* default */]);
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_3_vue_axios___default.a, __WEBPACK_IMPORTED_MODULE_2_axios___default.a);
 
-__WEBPACK_IMPORTED_MODULE_2_axios___default.a.defaults.baseURL = 'https://www.mango-wallet.com/api/';
+__WEBPACK_IMPORTED_MODULE_2_axios___default.a.defaults.baseURL = window.location.hostname + '/api/';
 
 var router = new __WEBPACK_IMPORTED_MODULE_1_vue_router__["a" /* default */]({
     mode: "history",

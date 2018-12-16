@@ -34,7 +34,7 @@ Vue.use(BootstrapVue);
 Vue.use(VueRouter);
 Vue.use(VueAxios, axios);
 
-axios.defaults.baseURL = 'https://www.mango-wallet.com/api/';
+axios.defaults.baseURL = window.location.hostname + '/api/';
 
 const router = new VueRouter({
     mode: "history",
